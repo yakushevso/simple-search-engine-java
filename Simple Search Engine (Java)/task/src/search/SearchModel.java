@@ -5,11 +5,11 @@ import java.util.List;
 
 public class SearchModel {
 
-    public List<String> findPeople(List<String> peopleList, String dataOfSearch) {
+    public List<String> searchPeople(List<String> peopleList, String searchQuery) {
         List<String> foundPeopleList = new ArrayList<>();
 
         for (String person : peopleList) {
-            if (person.toLowerCase().contains(dataOfSearch.toLowerCase())) {
+            if (person.toLowerCase().contains(searchQuery.toLowerCase())) {
                 foundPeopleList.add(person);
             }
         }
