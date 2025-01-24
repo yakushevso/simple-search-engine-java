@@ -1,16 +1,19 @@
 package search;
 
-public class SearchModel {
-    public int getWordPosition(String first, String second) {
-        String[] parts = first.split("\\s");
+import java.util.ArrayList;
+import java.util.List;
 
-        for (int i = 0; i < parts.length; i++) {
-            String part = parts[i];
-            if (part.equals(second)) {
-                return i + 1;
+public class SearchModel {
+
+    public List<String> findPeople(List<String> peopleList, String dataOfSearch) {
+        List<String> foundPeopleList = new ArrayList<>();
+
+        for (String person : peopleList) {
+            if (person.toLowerCase().contains(dataOfSearch.toLowerCase())) {
+                foundPeopleList.add(person);
             }
         }
 
-        return -1;
+        return foundPeopleList;
     }
 }
