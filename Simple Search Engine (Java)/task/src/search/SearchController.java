@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SearchController {
     private final SearchView view;
@@ -18,7 +19,7 @@ public class SearchController {
     }
 
     public void run() {
-        List<String> people = filePath == null ? loadPeopleData() : loadPeopleFromFile(filePath);
+        List<String> data = filePath == null ? loadDataFromConsole() : loadDataFromFile(filePath);
 
         while (true) {
             view.printOutput(Messages.MENU);
@@ -26,8 +27,8 @@ public class SearchController {
             String userChoice = view.getInput();
 
             switch (userChoice) {
-                case "1" -> searchForPeople(people);
-                case "2" -> displayListOfPeople(Messages.LIST_OF_PEOPLE, people);
+                case "1" -> searchForPeople(data);
+                case "2" -> displayAllPeople(data);
                 case "0" -> {
                     view.printOutput(Messages.BYE);
                     return;
@@ -37,7 +38,27 @@ public class SearchController {
         }
     }
 
-    private List<String> loadPeopleFromFile(String filePath) {
+    private void searchForPeople(List<String> data) {
+        view.printOutput(Messages.ENTER_NAME_OR_EMAIL);
+        String searchQuery = view.getInput();
+
+        Map<String, List<Integer>> invertedIndex = model.creatingInvertedIndex(data);
+        List<String> matchingListOfPeople = model.searchPeople(data, invertedIndex, searchQuery);
+
+        if (matchingListOfPeople.isEmpty()) {
+            view.printOutput(Messages.NOT_FOUND);
+        } else {
+            view.printOutput(matchingListOfPeople.size() + Messages.FOUND_PEOPLE.toString());
+            matchingListOfPeople.forEach(view::printOutput);
+        }
+    }
+
+    private void displayAllPeople(List<String> data) {
+        view.printOutput(Messages.LIST_OF_PEOPLE);
+        data.forEach(view::printOutput);
+    }
+
+    private List<String> loadDataFromFile(String filePath) {
         try {
             return Files.readAllLines(Path.of(filePath));
         } catch (IOException e) {
@@ -45,25 +66,7 @@ public class SearchController {
         }
     }
 
-    private void displayListOfPeople(Messages listOfPeople, List<String> people) {
-        view.printOutput(listOfPeople);
-        people.forEach(view::printOutput);
-    }
-
-    private void searchForPeople(List<String> people) {
-        view.printOutput(Messages.ENTER_NAME_OR_EMAIL);
-        String searchQuery = view.getInput();
-
-        List<String> matchingPeople = model.searchPeople(people, searchQuery);
-
-        if (matchingPeople.isEmpty()) {
-            view.printOutput(Messages.NOT_FOUND);
-        } else {
-            displayListOfPeople(Messages.FOUND_PEOPLE, matchingPeople);
-        }
-    }
-
-    private List<String> loadPeopleData() {
+    private List<String> loadDataFromConsole() {
         view.printOutput(Messages.ENTER_NUMBER_PEOPLE);
         int numOfPeople = Integer.parseInt(view.getInput());
 

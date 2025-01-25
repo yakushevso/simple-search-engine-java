@@ -4,7 +4,7 @@ public enum Messages {
     NOT_FOUND("No matching people found."),
     ENTER_NUMBER_PEOPLE("Enter the number of people:"),
     ENTER_ALL_PEOPLE("Enter all people:"),
-    FOUND_PEOPLE("Found people:"),
+    FOUND_PEOPLE(" persons found:"),
     MENU("""
             === Menu ===
             1. Find a person
