@@ -20,6 +20,7 @@ public class SearchController {
 
     public void run() {
         List<String> data = filePath == null ? loadDataFromConsole() : loadDataFromFile(filePath);
+        Map<String, List<Integer>> invertedIndex = model.creatingInvertedIndex(data);
 
         while (true) {
             view.printOutput(Messages.MENU);
@@ -27,7 +28,7 @@ public class SearchController {
             String userChoice = view.getInput();
 
             switch (userChoice) {
-                case "1" -> searchForPeople(data);
+                case "1" -> searchForPeople(data, invertedIndex);
                 case "2" -> displayAllPeople(data);
                 case "0" -> {
                     view.printOutput(Messages.BYE);
@@ -38,18 +39,28 @@ public class SearchController {
         }
     }
 
-    private void searchForPeople(List<String> data) {
+    private void searchForPeople(List<String> data, Map<String, List<Integer>> invertedIndex) {
+        view.printOutput(Messages.SELECT_STRATEGY);
+        String userChoiceStrategy = view.getInput().toLowerCase();
+
         view.printOutput(Messages.ENTER_NAME_OR_EMAIL);
-        String searchQuery = view.getInput();
+        List<String> searchQueries = List.of(view.getInput().split("\\s"));
 
-        Map<String, List<Integer>> invertedIndex = model.creatingInvertedIndex(data);
-        List<String> matchingListOfPeople = model.searchPeople(data, invertedIndex, searchQuery);
+        List<String> matchingPeople = model.searchPeople(data, invertedIndex, searchQueries, userChoiceStrategy);
 
-        if (matchingListOfPeople.isEmpty()) {
+        if (matchingPeople == null) {
+            view.printOutput(Messages.INCORRECT_OPTION);
+        } else {
+            displayMatchingPeople(matchingPeople);
+        }
+    }
+
+    private void displayMatchingPeople(List<String> matchingPeople) {
+        if (matchingPeople.isEmpty()) {
             view.printOutput(Messages.NOT_FOUND);
         } else {
-            view.printOutput(matchingListOfPeople.size() + Messages.FOUND_PEOPLE.toString());
-            matchingListOfPeople.forEach(view::printOutput);
+            view.printOutput(matchingPeople.size() + Messages.FOUND_PEOPLE.toString());
+            matchingPeople.forEach(view::printOutput);
         }
     }
 
@@ -62,13 +73,22 @@ public class SearchController {
         try {
             return Files.readAllLines(Path.of(filePath));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to read the file at path: " + filePath, e);
+            throw new RuntimeException(Messages.FILED_TO_READ_FILE + filePath, e);
         }
     }
 
     private List<String> loadDataFromConsole() {
         view.printOutput(Messages.ENTER_NUMBER_PEOPLE);
-        int numOfPeople = Integer.parseInt(view.getInput());
+        int numOfPeople;
+
+        while (true) {
+            try {
+                numOfPeople = Integer.parseInt(view.getInput());
+                break;
+            } catch (NumberFormatException e) {
+                view.printOutput(Messages.INCORRECT_OPTION);
+            }
+        }
 
         view.printOutput(Messages.ENTER_ALL_PEOPLE);
         List<String> data = new ArrayList<>();

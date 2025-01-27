@@ -1,5 +1,10 @@
 package search;
 
+import search.strategy.AllSearchStrategy;
+import search.strategy.AnySearchStrategy;
+import search.strategy.NoneSearchStrategy;
+import search.strategy.SearchContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,12 +32,18 @@ public class SearchModel {
         return invertedIndex;
     }
 
-    public List<String> searchPeople(List<String> data, Map<String, List<Integer>> invertedIndex, String searchQuery) {
-        List<String> foundListOfPeople = new ArrayList<>();
-        List<Integer> indexes = invertedIndex.getOrDefault(searchQuery.toLowerCase(), List.of());
+    public List<String> searchPeople(List<String> data, Map<String, List<Integer>> invertedIndex, List<String> searchQueries, String userChoiceStrategy) {
+        SearchContext context = new SearchContext();
 
-        indexes.forEach(index -> foundListOfPeople.add(data.get(index)));
+        switch (userChoiceStrategy) {
+            case "all" -> context.setStrategy(new AllSearchStrategy());
+            case "any" -> context.setStrategy(new AnySearchStrategy());
+            case "none" -> context.setStrategy(new NoneSearchStrategy());
+            default -> {
+                return null;
+            }
+        }
 
-        return foundListOfPeople;
+        return context.search(data, invertedIndex, searchQueries);
     }
 }

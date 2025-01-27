@@ -1,19 +1,22 @@
 package search;
 
 public enum Messages {
-    NOT_FOUND("No matching people found."),
-    ENTER_NUMBER_PEOPLE("Enter the number of people:"),
+    BYE("Bye!"),
     ENTER_ALL_PEOPLE("Enter all people:"),
+    ENTER_NAME_OR_EMAIL("Enter a name or email to search all suitable people."),
+    ENTER_NUMBER_PEOPLE("Enter the number of people:"),
+    FILED_TO_READ_FILE("Failed to read the file at path: "),
     FOUND_PEOPLE(" persons found:"),
+    INCORRECT_OPTION("Incorrect option! Try again."),
+    LIST_OF_PEOPLE("=== List of people ==="),
     MENU("""
             === Menu ===
             1. Find a person
             2. Print all people
             0. Exit"""),
-    INCORRECT_OPTION("Incorrect option! Try again."),
-    ENTER_NAME_OR_EMAIL("Enter a name or email to search all suitable people."),
-    LIST_OF_PEOPLE("=== List of people ==="),
-    BYE("Bye!");
+    NOT_FOUND("No matching people found."),
+    SELECT_STRATEGY("Select a matching strategy: ALL, ANY, NONE");
+
 
     private final String message;
 
